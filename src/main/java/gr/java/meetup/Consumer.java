@@ -15,7 +15,7 @@ public class Consumer {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                from("rabbitmq://localhost/test?queue=meetup")
+                from("rabbitmq://localhost/testTopic?queue=meetup&exchangeType=topic&routingKey=kosmas.*")
                         .convertBodyTo(String.class)
                         .process(exchange -> {
                             System.out.printf("Received message from RabbitMQ: %s%n", exchange.getIn().getBody());
@@ -29,3 +29,11 @@ public class Consumer {
         SpringApplication.run(Consumer.class, args);
     }
 }
+
+
+
+/**
+ * Direct uri: rabbitmq://localhost/testDirect?queue=meetup&exchangeType=direct
+ * Fanout uri: rabbitmq://localhost/testFanout?queue=meetup&exchangeType=fanout
+ * Topic uri: rabbitmq://localhost/testTopic?queue=meetup&exchangeType=topic
+ */

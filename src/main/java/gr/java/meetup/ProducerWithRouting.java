@@ -13,17 +13,20 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableAutoConfiguration
-public class Producer implements InitializingBean{
+public class ProducerWithRouting implements InitializingBean{
+
+    private static final String routingKeys[] = {"kosmas.seefood", "kosmas.fastfood", "kosmas.pizza",
+                                                 "spyros.seefood", "spyros.fastfood", "spyros.pizza"};
 
     private final ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
 
     private static int counter = 0;
 
-    @EndpointInject(uri = "rabbitmq://localhost/testDirect?queue=meetup&exchangeType=direct")
+    @EndpointInject(uri = "rabbitmq://localhost/testTopic?queue=meetup&exchangeType=topic")
     private ProducerTemplate producer;
 
     public static void main(String[] args) throws InterruptedException {
-        SpringApplication.run(Producer.class, args);
+        SpringApplication.run(ProducerWithRouting.class, args);
     }
 
     @Override
@@ -33,7 +36,7 @@ public class Producer implements InitializingBean{
 
             System.out.printf("Sending message to RabbitMQ: %s%n", message);
 
-            producer.sendBody(message);
+            producer.sendBodyAndHeader(message, "rabbitmq.ROUTING_KEY", routingKeys[counter % routingKeys.length]);
         }, 1, 1, TimeUnit.SECONDS);
     }
 }
@@ -42,4 +45,5 @@ public class Producer implements InitializingBean{
 /**
  * Direct uri: rabbitmq://localhost/testDirect?queue=meetup&exchangeType=direct
  * Fanout uri: rabbitmq://localhost/testFanout?queue=meetup&exchangeType=fanout
+ * Topic uri: rabbitmq://localhost/testTopic?queue=meetup&exchangeType=topic
  */
