@@ -22,7 +22,7 @@ public class ProducerWithRouting implements InitializingBean{
 
     private static int counter = 0;
 
-    @EndpointInject(uri = "rabbitmq://localhost/testTopic?queue=meetup&exchangeType=topic")
+    @EndpointInject(uri = "rabbitmq://localhost/testTopic?exchangeType=topic")
     private ProducerTemplate producer;
 
     public static void main(String[] args) throws InterruptedException {
@@ -32,11 +32,13 @@ public class ProducerWithRouting implements InitializingBean{
     @Override
     public void afterPropertiesSet() throws Exception {
         executorService.scheduleWithFixedDelay(() -> {
-            final String message = "Hello World " + counter++;
+            String routingKey = routingKeys[counter % routingKeys.length];
+
+            final String message = "Hello World " + counter++ + " " + routingKey;
 
             System.out.printf("Sending message to RabbitMQ: %s%n", message);
 
-            producer.sendBodyAndHeader(message, "rabbitmq.ROUTING_KEY", routingKeys[counter % routingKeys.length]);
+            producer.sendBodyAndHeader(message, "rabbitmq.ROUTING_KEY", routingKey);
         }, 1, 1, TimeUnit.SECONDS);
     }
 }
@@ -45,5 +47,5 @@ public class ProducerWithRouting implements InitializingBean{
 /**
  * Direct uri: rabbitmq://localhost/testDirect?queue=meetup&exchangeType=direct
  * Fanout uri: rabbitmq://localhost/testFanout?queue=meetup&exchangeType=fanout
- * Topic uri: rabbitmq://localhost/testTopic?queue=meetup&exchangeType=topic
+ * Topic uri: rabbitmq://localhost/testTopic?exchangeType=topic
  */
