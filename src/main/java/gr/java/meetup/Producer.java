@@ -41,5 +41,5 @@ public class Producer implements InitializingBean{
 
 /**
  * Direct uri: rabbitmq://localhost/testDirect?queue=meetup&exchangeType=direct
- * Fanout uri: rabbitmq://localhost/testFanout?queue=meetup&exchangeType=fanout
+ * Fanout uri: rabbitmq://localhost/testFanout?exchangeType=fanout
  */
