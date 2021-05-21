@@ -10,7 +10,7 @@
 
 
     <properties>
-        <camel.version>2.15.1</camel.version>
+        <camel.version>2.25.1</camel.version>
         <spring-dep.version>1.3.1.RELEASE</spring-dep.version>
     </properties>
 
